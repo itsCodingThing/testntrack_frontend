@@ -1,5 +1,7 @@
 import ky from "ky";
 import type { User } from "next-auth";
+import type { ISchool } from "@/types/models/school";
+import { auth } from "./auth";
 
 const baseUrl = "http://localhost:8080/api/v1/";
 const apiV1 = ky.create({ prefixUrl: baseUrl });
@@ -25,5 +27,15 @@ export async function login({
     >("auth/login", { json: { email, password, type: "admin" } })
     .json();
 
+  return response;
+}
+
+export async function getSchools() {
+  const session = await auth();
+  const response = await apiV1
+    .get<
+      ApiResponse<ISchool[]>
+    >("schools", { headers: { authorization: "Bearer " + session?.user.token } })
+    .json();
   return response;
 }

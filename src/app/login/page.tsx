@@ -40,6 +40,7 @@ export default function LoginPage() {
         console.log(res.error);
         toast({ variant: "destructive", description: "Login failed" });
       } else {
+        console.log(res);
         router.push("/dashboard");
       }
     });
