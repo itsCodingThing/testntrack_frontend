@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email" }),
@@ -23,6 +24,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
+  const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -36,6 +38,7 @@ export default function LoginPage() {
     signIn("credentials", { ...values, redirect: false }).then((res) => {
       if (res?.error) {
         console.log(res.error);
+        toast({ variant: "destructive", description: "Login failed" });
       } else {
         router.push("/dashboard");
       }
