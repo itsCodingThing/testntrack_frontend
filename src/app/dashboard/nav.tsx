@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react";
 
 export default function Nav() {
   return (
-    <div className="grid grid-rows-2 gap-2 py-4">
+    <div className="grid grid-rows-2 gap-1">
       <Button variant="default">
         <Link href="/dashboard">Dashboard</Link>
       </Button>

@@ -23,11 +23,13 @@ import { useState } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  children?: React.ReactNode;
 }
 
 export default function DataTable<TData, TValue>({
   columns,
   data,
+  children,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -43,7 +45,7 @@ export default function DataTable<TData, TValue>({
 
   return (
     <>
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-1 py-4">
         <Input
           placeholder="Filter school names..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -52,6 +54,7 @@ export default function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+        {children}
       </div>
       <div className="rounded-md border">
         <Table>

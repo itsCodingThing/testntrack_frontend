@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import type { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { login } from "./api";
+import { authApi } from "./api";
 
 declare module "next-auth" {
   interface User {
@@ -25,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (cred) => {
         console.log("auth function ", cred);
 
-        const user = await login({
+        const user = await authApi.adminLogin({
           email: cred.email as string,
           password: cred.password as string,
         });
