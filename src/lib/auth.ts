@@ -1,6 +1,19 @@
 import NextAuth from "next-auth";
+import type { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { login } from "./api";
+
+declare module "next-auth" {
+  interface User {
+    token: string;
+  }
+
+  interface Session {
+    user: {
+      token: string;
+    } & DefaultSession["user"];
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -12,9 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (cred) => {
         console.log("auth function ", cred);
 
-        let user = null;
-
-        user = await login({
+        const user = await login({
           email: cred.email as string,
           password: cred.password as string,
         });
@@ -23,4 +34,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.token = user.token;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      session.user.token = token.token as string;
+      return session;
+    },
+  },
 });

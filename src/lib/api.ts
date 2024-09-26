@@ -1,5 +1,5 @@
 import ky from "ky";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 
 const baseUrl = "http://localhost:8080/api/v1/";
 const apiV1 = ky.create({ prefixUrl: baseUrl });
