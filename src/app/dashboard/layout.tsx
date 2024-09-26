@@ -13,7 +13,7 @@ export default async function DashboardLayout({
 
   return (
     <section className="grid grid-cols-12">
-      <MobileSidebar>
+      <MobileSidebar className="md:hidden">
         <Nav />
       </MobileSidebar>
       <div className="bg-red-200 md:col-span-2 md:[display:block] hidden">
