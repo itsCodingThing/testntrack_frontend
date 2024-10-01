@@ -37,10 +37,8 @@ export default function LoginPage() {
   function onSubmit(values: z.output<typeof formSchema>) {
     signIn("credentials", { ...values, redirect: false }).then((res) => {
       if (res?.error) {
-        console.log(res.error);
         toast({ variant: "destructive", description: "Login failed" });
       } else {
-        console.log(res);
         router.push("/dashboard");
       }
     });
@@ -53,6 +51,7 @@ export default function LoginPage() {
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
+          disabled={form.formState.isSubmitting}
           name="email"
           control={form.control}
           render={({ field }) => (
@@ -65,6 +64,7 @@ export default function LoginPage() {
           )}
         />
         <FormField
+          disabled={form.formState.isSubmitting}
           name="password"
           control={form.control}
           render={({ field }) => (

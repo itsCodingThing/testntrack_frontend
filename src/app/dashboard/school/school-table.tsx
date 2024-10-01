@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import AddSchool from "./add-school";
 import { More } from "@/components/icons";
+import { removeSchool } from "@/lib/api";
 
 const columns: ColumnDef<ISchool>[] = [
   {
@@ -37,6 +38,7 @@ const columns: ColumnDef<ISchool>[] = [
     header: "Status",
   },
   {
+    header: "Action",
     id: "actions",
     cell: ({ row }) => {
       const data = row.original;
@@ -50,14 +52,18 @@ const columns: ColumnDef<ISchool>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(data.name)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
+            <DropdownMenuItem>View Dashboard</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem
+              className="hover:bg-red-500"
+              onClick={() => {
+                removeSchool(data.id.toString()).then((res) => {
+                  console.log(res);
+                });
+              }}
+            >
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

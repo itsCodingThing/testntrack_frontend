@@ -11,13 +11,12 @@ export default async function DashboardLayout({
   const session = await auth();
   if (!session) return redirect("/login");
 
-  console.log(session);
-
   return (
     <>
       <MobileSidebar className="md:hidden">
         <NavLinks />
       </MobileSidebar>
+      <h1 className="text-center font-bold text-5xl my-5">ManageIT</h1>
       <section className="min-h-svh grid grid-cols-12">
         <div className="md:col-span-2 md:[display:block] hidden p-4">
           <NavLinks />

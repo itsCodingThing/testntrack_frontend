@@ -1,0 +1,149 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createAdmin } from "@/lib/api";
+
+const schema = z.object({
+  email: z.string().email("Please enter email"),
+  name: z.string().min(1, "Please enter name"),
+  contact: z.string().length(10, "Please enter contact"),
+  password: z.string().min(2, "Please enter password minimum length of 2"),
+});
+
+export default function AddAdmin() {
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      email: "",
+      contact: "",
+      password: "",
+    },
+  });
+
+  function onSubmit(values: z.output<typeof schema>) {
+    createAdmin(values).then(() => {});
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Add Admin</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add Admin</DialogTitle>
+          <DialogDescription>Click save when you are done.</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            className="grid grid-cols-4 gap-4 py-4"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <FormField
+              disabled={form.formState.isSubmitting}
+              control={form.control}
+              name="name"
+              render={({ field }) => {
+                return (
+                  <FormItem className="col-span-4">
+                    <FormLabel className="text-right">Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        placeholder="Enter your name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              disabled={form.formState.isSubmitting}
+              control={form.control}
+              name="email"
+              render={({ field }) => {
+                return (
+                  <FormItem className="col-span-4">
+                    <FormLabel className="text-right">Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        placeholder="Enter email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              disabled={form.formState.isSubmitting}
+              control={form.control}
+              name="password"
+              render={({ field }) => {
+                return (
+                  <FormItem className="col-span-4">
+                    <FormLabel className="text-right">Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        placeholder="Enter Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              disabled={form.formState.isSubmitting}
+              control={form.control}
+              name="contact"
+              render={({ field }) => {
+                return (
+                  <FormItem className="col-span-4">
+                    <FormLabel className="text-right">Contact</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        placeholder="Enter Contact"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <Button type="submit">Save</Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

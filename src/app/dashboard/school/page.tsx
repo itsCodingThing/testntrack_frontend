@@ -1,8 +1,8 @@
-import { schoolApi } from "@/lib/api";
+import { getSchools } from "@/lib/api";
 import SchoolTable from "./school-table";
 
 export default async function SchoolPage() {
-  const { data } = await schoolApi.getSchools();
+  const { data } = await getSchools();
 
   return (
     <section>

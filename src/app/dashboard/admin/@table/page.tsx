@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import AdminTable from "./admin-table";
-import { adminApi } from "@/lib/api";
+import { getAllAdmins } from "@/lib/api";
 
 export default async function AdminPage() {
-  const response = await adminApi.getAllAdmins();
+  const response = await getAllAdmins();
 
   return (
     <Suspense fallback={<p>Loading Admin Tables</p>}>

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createSchool } from "./actions";
 
 export default function AddSchool() {
   return (
@@ -24,7 +23,7 @@ export default function AddSchool() {
           <DialogTitle>Add School</DialogTitle>
           <DialogDescription>Click save when you are done.</DialogDescription>
         </DialogHeader>
-        <form action={createSchool} className="grid grid-cols-4 gap-4 py-4">
+        <form className="grid grid-cols-4 gap-4 py-4">
           <div className="col-span-4">
             <Label htmlFor="name" className="text-right">
               Name
