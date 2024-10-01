@@ -45,7 +45,7 @@ export default function DataTable<TData, TValue>({
 
   return (
     <>
-      <div className="flex items-center gap-1 py-4">
+      <div className="flex items-center gap-1">
         <Input
           placeholder="Filter school names..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -56,7 +56,7 @@ export default function DataTable<TData, TValue>({
         />
         {children}
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border mt-5">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

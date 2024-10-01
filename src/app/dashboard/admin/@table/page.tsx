@@ -1,6 +1,6 @@
 import { Suspense } from "react";
+import AdminTable from "./admin-table";
 import { adminApi } from "@/lib/api";
-import AdminTable from "../admin-table";
 
 export default async function AdminPage() {
   const response = await adminApi.getAllAdmins();

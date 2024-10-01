@@ -2,6 +2,7 @@ import ky from "ky";
 import type { User } from "next-auth";
 import type { ISchool } from "@/types/models/school";
 import { auth } from "./auth";
+import { IAdmin } from "@/types/models/admin";
 
 const baseUrl = "http://localhost:8080/api/v1/";
 const apiV1 = ky.create({ prefixUrl: baseUrl });
@@ -32,13 +33,18 @@ export const authApi = {
   },
 };
 
-interface CreateSchoolPayload {
-  name: string;
-  email: string;
-  contact: string;
-  code: string;
-  type: string;
-}
+export const adminApi = {
+  getAllAdmins: async () => {
+    const session = await auth();
+    const response = await apiV1
+      .get<
+        ApiResponse<IAdmin[]>
+      >("admin", { headers: { authorization: "Bearer " + session?.user.token } })
+      .json();
+
+    return response;
+  },
+};
 
 export const schoolApi = {
   getSchools: async () => {
@@ -50,7 +56,13 @@ export const schoolApi = {
       .json();
     return response;
   },
-  createSchool: async (payload: CreateSchoolPayload) => {
+  createSchool: async (payload: {
+    name: string;
+    email: string;
+    contact: string;
+    code: string;
+    type: string;
+  }) => {
     const session = await auth();
     const response = await apiV1
       .post<
