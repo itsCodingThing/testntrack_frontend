@@ -7,6 +7,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -17,40 +18,38 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { createAdmin } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
+import { createSchool } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const adminFormSchema = z.object({
-  email: z.string().email("Please enter email"),
+const schoolFormSchema = z.object({
   name: z.string().min(1, "Please enter name"),
-  contact: z.string().length(10, "Please enter contact"),
-  password: z.string().min(2, "Please enter password minimum length of 2"),
+  email: z.string().email("Please enter valid email"),
+  code: z.string().min(1, "Please enter valid code"),
+  contact: z.string().length(10, "Please enter valid contact"),
 });
 
-export default function AddAdmin() {
-  const { toast } = useToast();
+export default function AddSchool() {
   const [toggleForm, setToggleForm] = useState(false);
-  const form = useForm<z.infer<typeof adminFormSchema>>({
-    resolver: zodResolver(adminFormSchema),
+  const form = useForm<z.infer<typeof schoolFormSchema>>({
+    resolver: zodResolver(schoolFormSchema),
     defaultValues: {
       name: "",
       email: "",
       contact: "",
-      password: "",
+      code: "",
     },
   });
 
-  function onSubmit(values: z.output<typeof adminFormSchema>) {
-    createAdmin(values).then((res) => {
+  function onSubmit(values: z.output<typeof schoolFormSchema>) {
+    createSchool(values).then((res) => {
       if (!res.status) {
         toast({ variant: "destructive", title: res.message });
       } else {
-        setToggleForm(!toggleForm);
+        setToggleForm(false);
       }
     });
   }
@@ -58,11 +57,11 @@ export default function AddAdmin() {
   return (
     <Dialog open={toggleForm} onOpenChange={setToggleForm}>
       <DialogTrigger asChild>
-        <Button variant="outline">Add Admin</Button>
+        <Button variant="outline">Add School</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add Admin</DialogTitle>
+          <DialogTitle>Add School</DialogTitle>
           <DialogDescription>Click save when you are done.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -81,7 +80,7 @@ export default function AddAdmin() {
                     <FormControl>
                       <Input
                         className="col-span-3"
-                        placeholder="Enter your name"
+                        placeholder="Enter your school name"
                         {...field}
                       />
                     </FormControl>
@@ -90,6 +89,7 @@ export default function AddAdmin() {
                 );
               }}
             />
+
             <FormField
               disabled={form.formState.isSubmitting}
               control={form.control}
@@ -101,7 +101,7 @@ export default function AddAdmin() {
                     <FormControl>
                       <Input
                         className="col-span-3"
-                        placeholder="Enter email"
+                        placeholder="Enter school email"
                         {...field}
                       />
                     </FormControl>
@@ -113,15 +113,15 @@ export default function AddAdmin() {
             <FormField
               disabled={form.formState.isSubmitting}
               control={form.control}
-              name="password"
+              name="code"
               render={({ field }) => {
                 return (
                   <FormItem className="col-span-4">
-                    <FormLabel className="text-right">Password</FormLabel>
+                    <FormLabel className="text-right">Code</FormLabel>
                     <FormControl>
                       <Input
                         className="col-span-3"
-                        placeholder="Enter Password"
+                        placeholder="Enter school unique school code"
                         {...field}
                       />
                     </FormControl>
@@ -141,7 +141,7 @@ export default function AddAdmin() {
                     <FormControl>
                       <Input
                         className="col-span-3"
-                        placeholder="Enter Contact"
+                        placeholder="Enter school contact"
                         {...field}
                       />
                     </FormControl>

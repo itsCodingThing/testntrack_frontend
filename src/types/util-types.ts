@@ -18,3 +18,7 @@ export type EventFor<
   | undefined
   ? TEvent
   : never;
+
+export type Result<T, E> =
+  | { success: true; data: T }
+  | { success: false; error: E };

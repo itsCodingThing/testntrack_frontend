@@ -16,7 +16,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
-const formSchema = z.object({
+const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email" }),
   password: z
     .string()
@@ -26,22 +26,26 @@ const formSchema = z.object({
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  function onSubmit(values: z.output<typeof formSchema>) {
-    signIn("credentials", { ...values, redirect: false }).then((res) => {
-      if (res?.error) {
+  function onSubmit(values: z.output<typeof loginFormSchema>) {
+    signIn("credentials", { ...values, redirect: false })
+      .then((res) => {
+        if (res?.error) {
+          toast({ variant: "destructive", description: "Login failed" });
+        } else {
+          router.push("/dashboard");
+        }
+      })
+      .catch(() => {
         toast({ variant: "destructive", description: "Login failed" });
-      } else {
-        router.push("/dashboard");
-      }
-    });
+      });
   }
 
   return (
@@ -51,7 +55,6 @@ export default function LoginPage() {
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
-          disabled={form.formState.isSubmitting}
           name="email"
           control={form.control}
           render={({ field }) => (
@@ -64,7 +67,6 @@ export default function LoginPage() {
           )}
         />
         <FormField
-          disabled={form.formState.isSubmitting}
           name="password"
           control={form.control}
           render={({ field }) => (

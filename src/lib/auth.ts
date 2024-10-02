@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import type { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { adminLogin } from "./api";
+import { z, ZodError } from "zod";
 
 declare module "next-auth" {
   interface User {
@@ -15,6 +16,17 @@ declare module "next-auth" {
   }
 }
 
+const signInSchema = z.object({
+  email: z
+    .string({ required_error: "Email is required" })
+    .min(1, "Email is required")
+    .email("Invalid email"),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, "Password is required")
+    .max(32, "Password must be less than 32 characters"),
+});
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -23,12 +35,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "password", type: "password" },
       },
       authorize: async (cred) => {
-        const user = await adminLogin({
-          email: cred.email as string,
-          password: cred.password as string,
-        });
+        try {
+          const validate = await signInSchema.parseAsync(cred);
 
-        return user.data;
+          const user = await adminLogin({
+            email: validate.email,
+            password: validate.password,
+          });
+
+          return user.data;
+        } catch (error) {
+          if (error instanceof ZodError) {
+            // Return `null` to indicate that the credentials are invalid
+            return null;
+          }
+        }
       },
     }),
   ],

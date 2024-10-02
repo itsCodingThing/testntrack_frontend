@@ -1,21 +1,56 @@
 "use server";
 
-import ky from "ky";
-import type { User } from "next-auth";
-import type { ISchool } from "@/types/models/school";
-import { auth } from "./auth";
 import { IAdmin } from "@/types/models/admin";
+import type { ISchool } from "@/types/models/school";
+import ky, { HTTPError } from "ky";
+import type { User } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { auth } from "./auth";
 
 const baseUrl = "http://localhost:8080/api/v1/";
-const apiV1 = ky.create({ prefixUrl: baseUrl });
+const apiV1 = ky.create({
+  prefixUrl: baseUrl,
+  hooks: {
+    beforeRequest: [
+      async function setAuthToken(req) {
+        const session = await auth();
+        req.headers.set("Authorization", `Bearer ${session?.user.token ?? ""}`);
+      },
+    ],
+  },
+});
 
-interface ApiResponse<T> {
+interface ApiResponse<T = string> {
   statusCode: number;
   message: string;
   data: T;
   status: boolean;
   error?: string;
+}
+
+class ApiError<T = string> extends Error {
+  response: ApiResponse<T> | null;
+
+  constructor(message: string, res?: ApiResponse<T>) {
+    super(message);
+    this.name = "ApiError";
+    this.response = res ?? null;
+  }
+
+  static async defaultResponseError(error: unknown) {
+    if (error instanceof HTTPError) {
+      const errorResponse = await error.response.json<ApiResponse<string>>();
+      return errorResponse;
+    }
+
+    return {
+      statusCode: 500,
+      message: "something went wrong",
+      data: "",
+      status: false,
+      error: "",
+    };
+  }
 }
 
 export const adminLogin = async ({
@@ -35,74 +70,65 @@ export const adminLogin = async ({
 };
 
 export const getAllAdmins = async () => {
-  const session = await auth();
-  const response = await apiV1
-    .get<
-      ApiResponse<IAdmin[]>
-    >("admin", { headers: { authorization: "Bearer " + session?.user.token } })
-    .json();
+  const response = await apiV1.get<ApiResponse<IAdmin[]>>("admin").json();
 
   return response;
 };
 
-export const createAdmin = async (payload: {
+export async function createAdmin(payload: {
   name: string;
   email: string;
   contact: string;
   password: string;
-}) => {
-  const session = await auth();
-  const response = await apiV1
-    .post<
-      ApiResponse<string>
-    >("admin/create", { headers: { authorization: "Bearer " + session?.user.token }, json: payload })
-    .json();
-  return response;
-};
+}) {
+  try {
+    const response = await apiV1
+      .post<ApiResponse<string>>("admin/create", { json: payload })
+      .json();
+
+    revalidatePath("/dashboard/admin");
+
+    return response;
+  } catch (error) {
+    return await ApiError.defaultResponseError(error);
+  }
+}
 
 export const removeAdmin = async (adminId: string) => {
-  const session = await auth();
   const response = await apiV1
-    .delete<
-      ApiResponse<string>
-    >(`admin/${adminId}/remove`, { headers: { authorization: "Bearer " + session?.user.token } })
+    .delete<ApiResponse<string>>(`admin/${adminId}/remove`)
     .json();
   revalidatePath("/dashboard/admin");
   return response;
 };
 
 export const getSchools = async () => {
-  const session = await auth();
-  const response = await apiV1
-    .get<
-      ApiResponse<ISchool[]>
-    >("schools", { headers: { authorization: "Bearer " + session?.user.token } })
-    .json();
+  const response = await apiV1.get<ApiResponse<ISchool[]>>("schools").json();
   return response;
 };
 
-export const createSchool = async (payload: {
+export async function createSchool(payload: {
   name: string;
   email: string;
   contact: string;
   code: string;
-  type: string;
-}) => {
-  const session = await auth();
-  const response = await apiV1
-    .post<
-      ApiResponse<string>
-    >("school/create", { headers: { authorization: "Bearer " + session?.user.token }, json: payload })
-    .json();
-  return response;
-};
+}) {
+  try {
+    const response = await apiV1
+      .post<
+        ApiResponse<string>
+      >("school/create", { json: { type: "school", ...payload } })
+      .json();
+    revalidatePath("/dashboard/school");
+    return response;
+  } catch (error) {
+    return await ApiError.defaultResponseError(error);
+  }
+}
 
 export const removeSchool = async (schoolId: string) => {
-  const session = await auth();
   const response = await apiV1
-    .delete<
-      ApiResponse<string>
-    >(`school/${schoolId}/remove`, { headers: { authorization: "Bearer " + session?.user.token } })
+    .delete<ApiResponse<string>>(`school/${schoolId}/remove`)
     .json();
   return response;
 };
