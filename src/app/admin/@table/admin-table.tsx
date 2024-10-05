@@ -1,6 +1,5 @@
 "use client";
 
-import DataTable from "@/components/data-table";
 import { More, Trash } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +23,24 @@ import { DialogDescription, DialogTrigger } from "@radix-ui/react-dialog";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import AddAdmin from "./add-admin";
+import {
+  ColumnFiltersState,
+  flexRender,
+  getFilteredRowModel,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { EventFor } from "@/types/util-types";
+import { Input } from "@/components/ui/input";
+import FilterMenu from "./filter-menu";
 
 function DeleteAdminDialog({
   adminId,
@@ -130,9 +147,83 @@ const columns: ColumnDef<IAdmin>[] = [
 ];
 
 export default function AdminTable({ data }: { data: IAdmin[] }) {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const table = useReactTable({
+    data,
+    columns,
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    getCoreRowModel: getCoreRowModel(),
+    state: {
+      columnFilters,
+    },
+  });
+  const [filterBy, setFilterBy] = useState("name");
+
   return (
-    <DataTable columns={columns} data={data}>
-      <AddAdmin />
-    </DataTable>
+    <div className="mt-3">
+      <div className="flex items-center gap-1">
+        <Input
+          placeholder="Filter admins by name..."
+          value={(table.getColumn(filterBy)?.getFilterValue() as string) ?? ""}
+          onChange={(event: EventFor<"input", "onChange">) =>
+            table.getColumn(filterBy)?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <FilterMenu onColNameChange={(col) => setFilterBy(col)} />
+        <AddAdmin />
+      </div>
+      <div className="rounded-md border mt-1">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 }
