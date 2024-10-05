@@ -46,7 +46,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return user.data;
         } catch (error) {
           if (error instanceof ZodError) {
-            // Return `null` to indicate that the credentials are invalid
             return null;
           }
         }
@@ -57,11 +56,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.token = user.token;
+        token.id = user.id;
       }
+
       return token;
     },
     session({ session, token }) {
       session.user.token = token.token as string;
+      session.user.id = token.id as string;
+
       return session;
     },
   },

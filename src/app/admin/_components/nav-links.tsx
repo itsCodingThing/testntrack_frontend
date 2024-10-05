@@ -29,19 +29,13 @@ function NavLink({
   );
 }
 
-export default function NavLinks() {
+export default function NavLinks({ id }: { id: string }) {
   return (
     <nav className="h-full flex flex-col gap-2">
-      <NavLink className="rounded-none" href="/dashboard" title="Dashboard" />
-      <NavLink className="rounded-none" href="/dashboard/admin" title="Admin" />
+      <NavLink className="rounded-none" href="/admin" title="Dashboard" />
       <NavLink
         className="rounded-none"
-        href="/dashboard/school"
-        title="School"
-      />
-      <NavLink
-        className="rounded-none"
-        href="/dashboard/setting"
+        href={`/admin/${id}/settings`}
         title="Settings"
       />
       <div className="grow flex justify-center items-center">

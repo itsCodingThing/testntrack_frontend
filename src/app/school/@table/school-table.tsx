@@ -15,6 +15,7 @@ import {
 import AddSchool from "./add-school";
 import { More } from "@/components/icons";
 import { removeSchool } from "@/lib/api";
+import clsx from "clsx";
 
 const columns: ColumnDef<ISchool>[] = [
   {
@@ -36,12 +37,29 @@ const columns: ColumnDef<ISchool>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      const { status } = row.original;
+
+      return (
+        <p
+          className={clsx(
+            status === "pending"
+              ? "text-yellow-500"
+              : status === "active"
+                ? "text-green-500"
+                : "text-red-500",
+          )}
+        >
+          {row.original.status}
+        </p>
+      );
+    },
   },
   {
     header: "Action",
-    id: "actions",
     cell: ({ row }) => {
       const data = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

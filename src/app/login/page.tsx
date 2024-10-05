@@ -40,7 +40,7 @@ export default function LoginPage() {
         if (res?.error) {
           toast({ variant: "destructive", description: "Login failed" });
         } else {
-          router.push("/dashboard");
+          router.push("/admin/dashboard");
         }
       })
       .catch(() => {

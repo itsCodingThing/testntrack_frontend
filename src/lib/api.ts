@@ -2,6 +2,7 @@
 
 import { IAdmin } from "@/types/models/admin";
 import type { ISchool } from "@/types/models/school";
+import type { ApiResponse } from "@/types/response";
 import ky, { HTTPError } from "ky";
 import type { User } from "next-auth";
 import { revalidatePath } from "next/cache";
@@ -20,60 +21,72 @@ const apiV1 = ky.create({
   },
 });
 
-interface ApiResponse<T = string> {
-  statusCode: number;
-  message: string;
-  data: T;
-  status: boolean;
-  error?: string;
-}
-
-class ApiError<T = string> extends Error {
-  response: ApiResponse<T> | null;
-
-  constructor(message: string, res?: ApiResponse<T>) {
-    super(message);
-    this.name = "ApiError";
-    this.response = res ?? null;
-  }
-
-  static async defaultResponseError(error: unknown) {
-    if (error instanceof HTTPError) {
-      const errorResponse = await error.response.json<ApiResponse<string>>();
+async function createResponse<T>(error: unknown): Promise<ApiResponse<T>> {
+  if (error instanceof HTTPError) {
+    try {
+      const errorResponse = await error.response.json<ApiResponse<T>>();
       return errorResponse;
+    } catch {
+      return {
+        status: false,
+        statusCode: 500,
+        message: "json parsing failed",
+        error: "client error" as T,
+      };
     }
+  }
 
-    return {
-      statusCode: 500,
-      message: "something went wrong",
-      data: "",
-      status: false,
-      error: "",
-    };
+  return {
+    status: false,
+    statusCode: 500,
+    message: "something went wrong",
+    error: "client error" as T,
+  };
+}
+
+async function handleJsonApi<T>(
+  cb: Promise<ApiResponse<T>>,
+): Promise<ApiResponse<T>> {
+  try {
+    return await cb;
+  } catch (error) {
+    return await createResponse(error);
   }
 }
 
-export const adminLogin = async ({
+export async function adminLogin({
   email,
   password,
 }: {
   email: string;
   password: string;
-}) => {
-  const response = await apiV1
-    .post<
-      ApiResponse<{ token: string } & User>
-    >("auth/login", { json: { email, password, type: "admin" } })
-    .json();
+}) {
+  const response = await handleJsonApi(
+    apiV1
+      .post<
+        ApiResponse<{ token: string; id: number; name: string } & User>
+      >("auth/login", { json: { email, password, type: "admin" } })
+      .json(),
+  );
 
   return response;
-};
+}
 
-export const getAllAdmins = async () => {
-  const response = await apiV1.get<ApiResponse<IAdmin[]>>("admin").json();
-
+export async function getAllAdmins() {
+  const response = await handleJsonApi(
+    apiV1.get<ApiResponse<IAdmin[]>>("admin").json(),
+  );
   return response;
-};
+}
+
+export async function getAdminById(id: number) {
+  try {
+    const response = await apiV1.get<ApiResponse<IAdmin>>(`admin/${id}`).json();
+    return response;
+  } catch (error) {
+    return await createResponse(error);
+  }
+}
 
 export async function createAdmin(payload: {
   name: string;
@@ -90,7 +103,7 @@ export async function createAdmin(payload: {
 
     return response;
   } catch (error) {
-    return await ApiError.defaultResponseError(error);
+    return await createResponse(error);
   }
 }
 
@@ -122,7 +135,7 @@ export async function createSchool(payload: {
     revalidatePath("/dashboard/school");
     return response;
   } catch (error) {
-    return await ApiError.defaultResponseError(error);
+    return await createResponse(error);
   }
 }
 

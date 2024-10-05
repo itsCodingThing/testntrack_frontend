@@ -89,7 +89,6 @@ export default function AddSchool() {
                 );
               }}
             />
-
             <FormField
               disabled={form.formState.isSubmitting}
               control={form.control}
