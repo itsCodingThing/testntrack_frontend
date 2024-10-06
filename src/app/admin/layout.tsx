@@ -5,6 +5,8 @@ import NavLinks from "./_components/nav-links";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
+  admin: React.ReactNode;
+  school: React.ReactNode;
 }
 
 export default async function AdminLayout(props: AdminLayoutProps) {
@@ -21,7 +23,11 @@ export default async function AdminLayout(props: AdminLayoutProps) {
         <div className="md:col-span-2 md:[display:block] hidden p-4">
           {session.user.id && <NavLinks id={session.user.id} />}
         </div>
-        <div className="md:col-span-10 col-span-12 p-4">{props.children}</div>
+        <div className="md:col-span-10 col-span-12 p-4">
+          {props.children}
+          {props.admin}
+          {props.school}
+        </div>
       </section>
     </>
   );

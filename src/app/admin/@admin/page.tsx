@@ -8,5 +8,10 @@ export default async function AdminPage() {
     return <h1>no data available</h1>;
   }
 
-  return <AdminTable data={response.data} />;
+  return (
+    <div className="container mx-auto mt-2">
+      <h1 className="font-bold text-2xl">Admins</h1>
+      <AdminTable data={response.data} />
+    </div>
+  );
 }

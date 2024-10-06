@@ -1,5 +1,4 @@
 import DataCard from "@/components/data-card";
-import AdminTablePage from "./@table/page";
 
 export default function AdminPage() {
   return (
@@ -10,7 +9,6 @@ export default function AdminPage() {
         <DataCard title="Total admins" value={1525} />
         <DataCard title="Total admins" value={1525} />
       </div>
-      <AdminTablePage />
     </div>
   );
 }

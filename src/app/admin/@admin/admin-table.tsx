@@ -97,7 +97,7 @@ function AdminTableDropdown({ id }: { id: number }) {
   const [openDialog, setOpenDialog] = useState(false);
 
   return (
-    <>
+    <div className="w-full">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -119,7 +119,7 @@ function AdminTableDropdown({ id }: { id: number }) {
         </DropdownMenuContent>
       </DropdownMenu>
       <DeleteAdminDialog openDialog={openDialog} adminId={id.toString()} />
-    </>
+    </div>
   );
 }
 
