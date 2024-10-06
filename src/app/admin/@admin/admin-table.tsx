@@ -1,12 +1,12 @@
 "use client";
 
-import { More, Trash } from "@/components/icons";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -16,20 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from "@/hooks/use-toast";
-import { removeAdmin } from "@/lib/api";
-import type { IAdmin } from "@/types/models/admin";
-import { DialogDescription, DialogTrigger } from "@radix-ui/react-dialog";
-import { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
-import AddAdmin from "./add-admin";
-import {
-  ColumnFiltersState,
-  flexRender,
-  getFilteredRowModel,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -38,8 +24,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EventFor } from "@/types/util-types";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { More, Trash } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { removeAdmin } from "@/lib/api";
+import type { IAdmin } from "@/types/models/admin";
+import { EventFor } from "@/types/util-types";
+import { useEffect, useState } from "react";
+import AddAdmin from "./add-admin";
 import FilterMenu from "./filter-menu";
 
 function DeleteAdminDialog({
@@ -154,6 +163,7 @@ export default function AdminTable({ data }: { data: IAdmin[] }) {
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     state: {
       columnFilters,
     },
@@ -173,6 +183,41 @@ export default function AdminTable({ data }: { data: IAdmin[] }) {
         />
         <FilterMenu onColNameChange={(col) => setFilterBy(col)} />
         <AddAdmin />
+        <div className="flex">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Select
+            onValueChange={(v) => {
+              console.log(v);
+              table.setPageSize(Number(v));
+            }}
+          >
+            <SelectTrigger className="w-20">
+              <SelectValue placeholder="Rows" />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
       <div className="rounded-md border mt-1">
         <Table>

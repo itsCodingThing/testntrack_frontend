@@ -38,9 +38,7 @@ export default function NavLinks({ id }: { id: string }) {
         href={`/admin/${id}/settings`}
         title="Settings"
       />
-      <div className="grow flex justify-center items-center">
-        <SignOutButton className="rounded-none w-full" />
-      </div>
+      <SignOutButton className="rounded-none w-full" />
     </nav>
   );
 }

@@ -18,10 +18,12 @@ export default async function AdminLayout(props: AdminLayoutProps) {
       <MobileSidebar className="md:hidden">
         {session.user.id && <NavLinks id={session.user.id} />}
       </MobileSidebar>
-      <h1 className="text-center font-bold text-5xl my-5">ManageIT</h1>
-      <section className="min-h-svh grid grid-cols-12">
+      <h1 className="text-center font-bold text-5xl mb-5">ManageIT</h1>
+      <section className="grid grid-cols-12">
         <div className="md:col-span-2 md:[display:block] hidden p-4">
-          {session.user.id && <NavLinks id={session.user.id} />}
+          <div className="flex flex-col">
+            {session.user.id && <NavLinks id={session.user.id} />}
+          </div>
         </div>
         <div className="md:col-span-10 col-span-12 p-4">
           {props.children}
