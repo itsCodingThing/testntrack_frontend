@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { More } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +10,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -24,6 +26,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { removeAdmin } from "@/lib/api";
+import type { IAdmin } from "@/types/models/admin";
+import { EventFor } from "@/types/util-types";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -33,77 +39,12 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { More, Trash } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { removeAdmin } from "@/lib/api";
-import type { IAdmin } from "@/types/models/admin";
-import { EventFor } from "@/types/util-types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddAdmin from "./add-admin";
 import FilterMenu from "./filter-menu";
 
-function DeleteAdminDialog({
-  adminId,
-  openDialog,
-}: {
-  adminId: string;
-  openDialog: boolean;
-}) {
-  const [open, setOpen] = useState(openDialog);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    setOpen(openDialog);
-  }, [openDialog]);
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Delete Admin</DialogTitle>
-          <DialogDescription>Are you sure !!!</DialogDescription>
-        </DialogHeader>
-        <DialogTrigger asChild>
-          <Button
-            type="submit"
-            size="sm"
-            className="px-3"
-            onClick={() => {
-              removeAdmin(adminId).then((res) => {
-                if (res.status) {
-                  toast({
-                    variant: "default",
-                    title: "Admin deleted successfully",
-                  });
-                } else {
-                  toast({
-                    variant: "default",
-                    title: "Failed to delete admin",
-                  });
-                }
-              });
-            }}
-          >
-            <span className="sr-only">Delete</span>
-            <Trash className="h-4 w-4" />
-          </Button>
-        </DialogTrigger>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 function AdminTableDropdown({ id }: { id: number }) {
-  const [openDialog, setOpenDialog] = useState(false);
+  const { toast } = useToast();
 
   return (
     <div className="w-full">
@@ -120,14 +61,25 @@ function AdminTableDropdown({ id }: { id: number }) {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
-              setOpenDialog(true);
+              removeAdmin(id.toString()).then((res) => {
+                if (res.status) {
+                  toast({
+                    variant: "default",
+                    title: "Admin deleted successfully",
+                  });
+                } else {
+                  toast({
+                    variant: "destructive",
+                    title: "Failed to delete admin",
+                  });
+                }
+              });
             }}
           >
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DeleteAdminDialog openDialog={openDialog} adminId={id.toString()} />
     </div>
   );
 }
@@ -183,7 +135,7 @@ export default function AdminTable({ data }: { data: IAdmin[] }) {
         />
         <FilterMenu onColNameChange={(col) => setFilterBy(col)} />
         <AddAdmin />
-        <div className="flex">
+        <div className="flex item-center gap-1">
           <Button
             variant="outline"
             size="sm"
@@ -231,7 +183,7 @@ export default function AdminTable({ data }: { data: IAdmin[] }) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   );
@@ -250,7 +202,7 @@ export default function AdminTable({ data }: { data: IAdmin[] }) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

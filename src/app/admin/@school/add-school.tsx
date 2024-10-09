@@ -30,6 +30,7 @@ const schoolFormSchema = z.object({
   email: z.string().email("Please enter valid email"),
   code: z.string().min(1, "Please enter valid code"),
   contact: z.string().length(10, "Please enter valid contact"),
+  password: z.string().min(8, "Password must be atleast 8 charactor long"),
 });
 
 export default function AddSchool() {
@@ -41,6 +42,7 @@ export default function AddSchool() {
       email: "",
       contact: "",
       code: "",
+      password: "",
     },
   });
 
@@ -55,7 +57,13 @@ export default function AddSchool() {
   }
 
   return (
-    <Dialog open={toggleForm} onOpenChange={setToggleForm}>
+    <Dialog
+      open={toggleForm}
+      onOpenChange={(open) => {
+        form.reset();
+        setToggleForm(open);
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline">Add School</Button>
       </DialogTrigger>
@@ -121,6 +129,26 @@ export default function AddSchool() {
                       <Input
                         className="col-span-3"
                         placeholder="Enter school unique school code"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              disabled={form.formState.isSubmitting}
+              control={form.control}
+              name="password"
+              render={({ field }) => {
+                return (
+                  <FormItem className="col-span-4">
+                    <FormLabel className="text-right">Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        placeholder="Enter password"
                         {...field}
                       />
                     </FormControl>

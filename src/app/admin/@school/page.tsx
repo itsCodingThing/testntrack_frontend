@@ -1,7 +1,7 @@
 import { getSchools } from "@/lib/api";
 import SchoolTable from "./school-table";
 
-export default async function AdminPage() {
+export default async function SchoolTablePage() {
   const response = await getSchools();
 
   if (!response.status) {

@@ -41,6 +41,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+
+function SchoolTableDropDown({ id }: { id: string }) {
+  const { toast } = useToast();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <More className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuItem>View Dashboard</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="hover:bg-red-500"
+          onClick={() => {
+            removeSchool(id).then((res) => {
+              if (!res.status) {
+                console.log(res.message);
+              } else {
+                toast({
+                  variant: "destructive",
+                  title: "Unable to delete school",
+                });
+              }
+            });
+          }}
+        >
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 const columns: ColumnDef<ISchool>[] = [
   {
@@ -72,7 +110,7 @@ const columns: ColumnDef<ISchool>[] = [
               ? "text-yellow-500"
               : status === "active"
                 ? "text-green-500"
-                : "text-red-500",
+                : "text-red-500"
           )}
         >
           {row.original.status}
@@ -85,31 +123,7 @@ const columns: ColumnDef<ISchool>[] = [
     cell: ({ row }) => {
       const data = row.original;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <More className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>View Dashboard</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="hover:bg-red-500"
-              onClick={() => {
-                removeSchool(data.id.toString()).then((res) => {
-                  console.log(res);
-                });
-              }}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <SchoolTableDropDown id={data.id.toString()} />;
     },
   },
 ];
@@ -188,7 +202,7 @@ export default function SchoolTable({ data }: { data: ISchool[] }) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   );
@@ -207,7 +221,7 @@ export default function SchoolTable({ data }: { data: ISchool[] }) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

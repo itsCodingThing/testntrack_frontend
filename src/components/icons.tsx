@@ -3,5 +3,7 @@ export {
   MoreHorizontal as More,
   Copy,
   Trash2 as Trash,
+  Layers as Stack,
+  Eye,
+  EyeOff,
 } from "lucide-react";
-export { GoStack as Stack } from "react-icons/go";

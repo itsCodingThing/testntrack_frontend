@@ -1,3 +1,7 @@
 export default function SchoolPage() {
-  return <section></section>;
+  return (
+    <section>
+      <h1>School Dashboard</h1>
+    </section>
+  );
 }

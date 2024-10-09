@@ -7,7 +7,7 @@ export default function LoginLayout({
     <div className="h-screen bg-zinc-50 grid place-items-center">
       <Card>
         <CardHeader>
-          <h1 className="text-center">TestnTrack Login</h1>
+          <h1 className="text-center font-bold text-2xl">TestnTrack Login</h1>
         </CardHeader>
         <CardContent>{children}</CardContent>
       </Card>

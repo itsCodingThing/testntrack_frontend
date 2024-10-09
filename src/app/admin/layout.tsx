@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import MobileSidebar from "./_components/mobile-sidebar";
 import NavLinks from "./_components/nav-links";
+import { Suspense } from "react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -27,8 +28,10 @@ export default async function AdminLayout(props: AdminLayoutProps) {
         </div>
         <div className="md:col-span-10 col-span-12 p-4">
           {props.children}
-          {props.admin}
-          {props.school}
+          <Suspense fallback={<p>loading....</p>}>
+            {props.admin}
+            {props.school}
+          </Suspense>
         </div>
       </section>
     </>

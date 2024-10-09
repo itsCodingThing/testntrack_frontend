@@ -45,7 +45,7 @@ async function createResponse<T>(error: unknown): Promise<ApiResponse<T>> {
 }
 
 async function handleJsonApi<T>(
-  cb: Promise<ApiResponse<T>>,
+  cb: Promise<ApiResponse<T>>
 ): Promise<ApiResponse<T>> {
   try {
     return await cb;
@@ -54,19 +54,19 @@ async function handleJsonApi<T>(
   }
 }
 
-export async function adminLogin({
-  email,
-  password,
-}: {
+type AdminLoginParams = {
+  type: "school" | "admin";
   email: string;
   password: string;
-}) {
+  code?: string;
+};
+export async function adminLogin(loginParams: AdminLoginParams) {
   const response = await handleJsonApi(
     apiV1
       .post<
         ApiResponse<{ token: string; id: number; name: string } & User>
-      >("auth/login", { json: { email, password, type: "admin" } })
-      .json(),
+      >("auth/login", { json: { ...loginParams } })
+      .json()
   );
 
   return response;
@@ -74,7 +74,7 @@ export async function adminLogin({
 
 export async function getAllAdmins() {
   const response = await handleJsonApi(
-    apiV1.get<ApiResponse<IAdmin[]>>("admin").json(),
+    apiV1.get<ApiResponse<IAdmin[]>>("admin").json()
   );
   return response;
 }
@@ -94,26 +94,23 @@ export async function createAdmin(payload: {
   contact: string;
   password: string;
 }) {
-  try {
-    const response = await apiV1
-      .post<ApiResponse<string>>("admin/create", { json: payload })
-      .json();
+  const response = await handleJsonApi(
+    apiV1.post<ApiResponse<string>>("admin/create", { json: payload }).json()
+  );
 
-    revalidatePath("/dashboard/admin");
+  revalidatePath("/dashboard/admin");
 
-    return response;
-  } catch (error) {
-    return await createResponse(error);
-  }
+  return response;
 }
 
-export const removeAdmin = async (adminId: string) => {
+export async function removeAdmin(adminId: string) {
   const response = await apiV1
     .delete<ApiResponse<string>>(`admin/${adminId}/remove`)
     .json();
-  revalidatePath("/dashboard/admin");
+
+  revalidatePath("/admin");
   return response;
-};
+}
 
 export const getSchools = async () => {
   const response = await apiV1.get<ApiResponse<ISchool[]>>("schools").json();

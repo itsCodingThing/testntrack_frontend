@@ -1,7 +1,7 @@
 import AdminTable from "./admin-table";
 import { getAllAdmins } from "@/lib/api";
 
-export default async function AdminPage() {
+export default async function AdminTablePage() {
   const response = await getAllAdmins();
 
   if (!response.status) {
