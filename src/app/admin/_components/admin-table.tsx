@@ -3,6 +3,20 @@
 import { CheckIcon, ChevronsUpDownIcon, MoreIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -10,7 +24,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -27,9 +54,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { removeAdmin } from "@/lib/api";
+import { createAdmin, removeAdmin } from "@/lib/backend-apis/admin";
+import { cn } from "@/lib/utils";
 import type { IAdmin } from "@/types/models/admin";
 import { EventFor } from "@/types/util-types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -40,40 +70,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { createAdmin } from "@/lib/api";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import React from "react";
 
 const adminFormSchema = z.object({
   email: z.string().email("Please enter email"),

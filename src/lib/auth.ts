@@ -1,18 +1,24 @@
 import NextAuth from "next-auth";
 import type { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { adminLogin } from "./api";
 import { z, ZodError } from "zod";
 import { ApiError } from "./error";
+import { adminLogin } from "./backend-apis/login";
 
 declare module "next-auth" {
   interface User {
     token: string;
+    type: "admin" | "school-admin";
+    schoolName?: string;
+    schoolId?: string;
   }
 
   interface Session {
     user: {
       token: string;
+      type: "admin" | "school-admin";
+      schoolName?: string;
+      schoolId?: string;
     } & DefaultSession["user"];
   }
 }
@@ -68,6 +74,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.token = user.token;
         token.id = user.id;
+        token.type = user.type;
+        token.schoolId = user.schoolId;
+        token.schoolName = user.schoolName;
       }
 
       return token;
@@ -75,6 +84,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session({ session, token }) {
       session.user.token = token.token as string;
       session.user.id = token.id as string;
+      session.user.type = token.type as "admin" | "school-admin";
+      session.user.schoolId = token.schoolId as string;
+      session.user.schoolName = token.schoolName as string;
 
       return session;
     },

@@ -10,6 +10,7 @@ interface AdminLayoutProps {
 export default async function AdminLayout(props: AdminLayoutProps) {
   const session = await auth();
   if (!session) return redirect("/login");
+  if (session.user.type !== "admin") return redirect("/login");
 
   return (
     <>

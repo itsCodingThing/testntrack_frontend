@@ -25,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { removeSchool } from "@/lib/api";
+import { removeSchool, createSchool } from "@/lib/backend-apis/school";
 import type { ISchool } from "@/types/models/school";
 import clsx from "clsx";
 import { EventFor } from "@/types/util-types";
@@ -57,7 +57,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
-import { createSchool } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
