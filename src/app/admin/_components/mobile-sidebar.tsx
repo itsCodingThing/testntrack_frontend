@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack } from "@/components/icons";
+import { StackIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -37,7 +37,7 @@ export default function MobileSidebar({
       <Sheet key={side}>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon">
-            <Stack className="h-4 w-4" />
+            <StackIcon className="h-4 w-4" />
           </Button>
         </SheetTrigger>
         <SheetContent side={side}>

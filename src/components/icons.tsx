@@ -1,9 +1,11 @@
 export {
-  AlignJustify as Menu,
-  MoreHorizontal as More,
-  Copy,
-  Trash2 as Trash,
-  Layers as Stack,
-  Eye,
-  EyeOff,
+  AlignJustify as MenuIcon,
+  MoreHorizontal as MoreIcon,
+  Copy as CopyIcon,
+  Trash2 as TrashIcon,
+  Layers as StackIcon,
+  Eye as EyeIcon,
+  EyeOff as EyeOffIcon,
+  Check as CheckIcon,
+  ChevronsUpDownIcon,
 } from "lucide-react";

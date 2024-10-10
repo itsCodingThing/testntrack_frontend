@@ -5,6 +5,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +14,8 @@ import { z } from "zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { EyeIcon, EyeOffIcon } from "@/components/icons";
+import { useState } from "react";
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email" }),
@@ -23,6 +26,7 @@ const loginFormSchema = z.object({
 });
 
 export default function SchoolLoginForm() {
+  const [togglePassword, setTogglePassword] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof loginFormSchema>>({
@@ -35,7 +39,6 @@ export default function SchoolLoginForm() {
   });
 
   function onSubmit(values: z.output<typeof loginFormSchema>) {
-    console.log("submit is clicked");
     const params = {
       type: "school",
       ...values,
@@ -69,6 +72,7 @@ export default function SchoolLoginForm() {
               <FormControl>
                 <Input placeholder="Enter School Code" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -81,6 +85,7 @@ export default function SchoolLoginForm() {
               <FormControl>
                 <Input placeholder="Enter Email" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -91,8 +96,26 @@ export default function SchoolLoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="Enter Password" {...field} />
+                <Input
+                  {...field}
+                  placeholder="Enter Password"
+                  type={togglePassword ? "password" : "text"}
+                  icon={
+                    togglePassword ? (
+                      <EyeIcon
+                        className="cursor-pointer"
+                        onClick={() => setTogglePassword(false)}
+                      />
+                    ) : (
+                      <EyeOffIcon
+                        className="cursor-pointer"
+                        onClick={() => setTogglePassword(true)}
+                      />
+                    )
+                  }
+                />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

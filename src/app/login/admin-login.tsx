@@ -5,6 +5,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +15,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "@/components/icons";
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email" }),
@@ -69,6 +70,7 @@ export default function AdminLoginForm() {
               <FormControl>
                 <Input placeholder="Enter Email" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -85,12 +87,12 @@ export default function AdminLoginForm() {
                   type={togglePassword ? "password" : "text"}
                   icon={
                     togglePassword ? (
-                      <Eye
+                      <EyeIcon
                         className="cursor-pointer"
                         onClick={() => setTogglePassword(false)}
                       />
                     ) : (
-                      <EyeOff
+                      <EyeOffIcon
                         className="cursor-pointer"
                         onClick={() => setTogglePassword(true)}
                       />
@@ -98,6 +100,7 @@ export default function AdminLoginForm() {
                   }
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

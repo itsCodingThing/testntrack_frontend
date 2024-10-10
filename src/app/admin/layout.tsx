@@ -2,12 +2,9 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import MobileSidebar from "./_components/mobile-sidebar";
 import NavLinks from "./_components/nav-links";
-import { Suspense } from "react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  admin: React.ReactNode;
-  school: React.ReactNode;
 }
 
 export default async function AdminLayout(props: AdminLayoutProps) {
@@ -26,13 +23,7 @@ export default async function AdminLayout(props: AdminLayoutProps) {
             {session.user.id && <NavLinks id={session.user.id} />}
           </div>
         </div>
-        <div className="md:col-span-10 col-span-12 p-4">
-          {props.children}
-          <Suspense fallback={<p>loading....</p>}>
-            {props.admin}
-            {props.school}
-          </Suspense>
-        </div>
+        <div className="md:col-span-10 col-span-12 p-4">{props.children}</div>
       </section>
     </>
   );
