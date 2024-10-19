@@ -8,7 +8,7 @@ export default function DataCard({
   value: number;
 }) {
   return (
-    <Card className="text-center w-40">
+    <Card className="text-center">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

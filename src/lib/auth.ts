@@ -37,6 +37,7 @@ const signInSchema = z.object({
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: "ksladfjslakfjaslkfjsalfkajfd",
   providers: [
     Credentials({
       credentials: {
@@ -45,6 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "password", type: "password" },
         code: { label: "code" },
       },
+      // @ts-expect-error next-auth cred typings error
       authorize: async (cred) => {
         try {
           const validate = await signInSchema.parseAsync(cred);

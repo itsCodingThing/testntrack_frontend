@@ -1,7 +1,13 @@
-export default async function Home() {
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+export default function Home() {
   return (
-    <>
-      <h1>testntrack frontend</h1>
-    </>
+    <main className="container mx-auto grid place-item-center">
+      <h1 className="text-5xl">testntrack frontend</h1>
+      <Link href="/login">
+        <Button>go to login page</Button>
+      </Link>
+    </main>
   );
 }

@@ -56,7 +56,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createAdmin, removeAdmin } from "@/lib/backend-apis/admin";
 import { cn } from "@/lib/utils";
-import type { IAdmin } from "@/types/models/admin";
+import type { Admin } from "@/types/models/admin";
 import { EventFor } from "@/types/util-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogTrigger } from "@radix-ui/react-dialog";
@@ -72,6 +72,7 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { format as formatDate } from "date-fns";
 
 const adminFormSchema = z.object({
   email: z.string().email("Please enter email"),
@@ -317,7 +318,7 @@ function AdminTableDropdown({ id }: { id: number }) {
   );
 }
 
-const columns: ColumnDef<IAdmin>[] = [
+const columns: ColumnDef<Admin>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -331,6 +332,13 @@ const columns: ColumnDef<IAdmin>[] = [
     header: "Contact",
   },
   {
+    accessorKey: "created_at",
+    header: "Date",
+    cell: ({ row }) => {
+      return <p>{formatDate(row.original.created_at, "dd/MM/yyyy")}</p>;
+    },
+  },
+  {
     header: "Action",
     id: "actions",
     cell: ({ row }) => {
@@ -340,7 +348,7 @@ const columns: ColumnDef<IAdmin>[] = [
   },
 ];
 
-export default function AdminTable({ data }: { data: IAdmin[] }) {
+export default function AdminTable({ data }: { data: Admin[] }) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
     data,
@@ -368,41 +376,6 @@ export default function AdminTable({ data }: { data: IAdmin[] }) {
         />
         <FilterMenu onColNameChange={(col) => setFilterBy(col)} />
         <AddAdmin />
-        <div className="flex item-center gap-1">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Select
-            onValueChange={(v) => {
-              console.log(v);
-              table.setPageSize(Number(v));
-            }}
-          >
-            <SelectTrigger className="w-20">
-              <SelectValue placeholder="Rows" />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
       </div>
       <div className="rounded-md border mt-1">
         <Table>
@@ -453,6 +426,38 @@ export default function AdminTable({ data }: { data: IAdmin[] }) {
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="mt-1 flex justify-end gap-1">
+        <Button
+          variant="outline"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Select
+          onValueChange={(v) => {
+            table.setPageSize(Number(v));
+          }}
+        >
+          <SelectTrigger className="w-20">
+            <SelectValue placeholder="Rows" />
+          </SelectTrigger>
+          <SelectContent>
+            {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+              <SelectItem key={pageSize} value={pageSize.toString()}>
+                {pageSize}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          variant="outline"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );

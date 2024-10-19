@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { apiV1, handleJsonApi } from "./setup";
 
 export const getSchools = async () => {
-  const response = await apiV1.get<ApiResponse<ISchool[]>>("schools").json();
+  const response = await apiV1.get<ApiResponse<ISchool[]>>("school").json();
   return response;
 };
 

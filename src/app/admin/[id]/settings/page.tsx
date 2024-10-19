@@ -1,4 +1,4 @@
-import { getAdminById } from "@/lib/api";
+import { getAdminById } from "@/lib/backend-apis/admin";
 
 export default async function SettingPage({
   params,

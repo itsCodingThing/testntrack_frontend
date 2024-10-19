@@ -1,18 +1,31 @@
-import { IAdmin } from "@/types/models/admin";
+import { Admin } from "@/types/models/admin";
 import { ApiResponse } from "@/types/response";
 import { revalidatePath } from "next/cache";
 import { handleJsonApi, apiV1 } from "./setup";
 
-export async function getAllAdmins() {
+export async function getAllAdmins(params?: { count: number; page: number }) {
+  let url = "admin";
+  const searchParams = new URLSearchParams();
+
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      searchParams.set(key, value.toString());
+    }
+
+    url = `${url}?${searchParams.toString()}`;
+  }
+
+  console.log(url);
   const response = await handleJsonApi(
-    apiV1.get<ApiResponse<IAdmin[]>>("admin").json()
+    apiV1.get<ApiResponse<Admin[]>>(url).json()
   );
+
   return response;
 }
 
 export async function getAdminById(id: number) {
   const response = await handleJsonApi(
-    apiV1.get<ApiResponse<IAdmin>>(`admin/${id}`).json()
+    apiV1.get<ApiResponse<Admin>>(`admin/${id}`).json()
   );
   return response;
 }

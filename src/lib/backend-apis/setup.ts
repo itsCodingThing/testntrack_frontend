@@ -2,7 +2,7 @@ import type { ApiResponse } from "@/types/response";
 import ky, { HTTPError } from "ky";
 import { auth } from "../auth";
 
-const baseUrl = "http://localhost:8080/api/v1/";
+const baseUrl = "http://localhost:8080/api/";
 export const apiV1 = ky.create({
   prefixUrl: baseUrl,
   hooks: {
