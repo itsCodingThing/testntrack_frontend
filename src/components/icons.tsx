@@ -8,4 +8,5 @@ export {
   EyeOff as EyeOffIcon,
   Check as CheckIcon,
   ChevronsUpDownIcon,
+  CirclePlusIcon,
 } from "lucide-react";

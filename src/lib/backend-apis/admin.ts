@@ -1,3 +1,5 @@
+"use server";
+
 import { Admin } from "@/types/models/admin";
 import { ApiResponse } from "@/types/response";
 import { revalidatePath } from "next/cache";
@@ -15,7 +17,6 @@ export async function getAllAdmins(params?: { count: number; page: number }) {
     url = `${url}?${searchParams.toString()}`;
   }
 
-  console.log(url);
   const response = await handleJsonApi(
     apiV1.get<ApiResponse<Admin[]>>(url).json()
   );

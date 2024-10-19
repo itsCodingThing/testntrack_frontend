@@ -1,5 +1,6 @@
 import { getAllAdmins } from "@/lib/backend-apis/admin";
 import AdminTable from "../_components/admin-table";
+import AddAdmin from "../_components/add-admin";
 
 export default async function ManageAdminPage() {
   const adminResponse = await getAllAdmins({ count: 20, page: 1 });
@@ -8,5 +9,10 @@ export default async function ManageAdminPage() {
     return <h1>no data available</h1>;
   }
 
-  return <AdminTable data={adminResponse.data} />;
+  return (
+    <>
+      <AddAdmin />
+      <AdminTable data={adminResponse.data} />
+    </>
+  );
 }

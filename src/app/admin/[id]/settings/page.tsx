@@ -1,4 +1,5 @@
 import { getAdminById } from "@/lib/backend-apis/admin";
+import Profile from "../../_components/profile";
 
 export default async function SettingPage({
   params,
@@ -7,5 +8,11 @@ export default async function SettingPage({
 }) {
   const response = await getAdminById(Number(params.id));
 
-  return <div className="container mx-auto">{response.message}</div>;
+  if (!response.status) {
+    return <div className="container mx-auto">no profile found</div>;
+  }
+
+  const { data: profile } = response;
+
+  return <Profile profile={profile} />;
 }

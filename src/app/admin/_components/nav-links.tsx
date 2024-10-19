@@ -29,13 +29,17 @@ function NavLink({
   );
 }
 
-export default function NavLinks() {
+export default function NavLinks({ userId }: { userId: string }) {
   return (
     <nav className="h-full flex flex-col gap-2 py-5">
       <NavLink href="/admin" title="Dashboard" />
       <NavLink href="/admin/manage-schools" title="School" />
       <NavLink href="/admin/manage-admins" title="Admin" />
-      <NavLink className="mt-auto" href="/admin/profile" title="Profile" />
+      <NavLink
+        className="mt-auto"
+        href={`/admin/${userId}/settings`}
+        title="Profile"
+      />
       <Button
         onClick={() => {
           signOut();

@@ -10,13 +10,6 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,14 +17,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -54,12 +39,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { createAdmin, removeAdmin } from "@/lib/backend-apis/admin";
-import { cn } from "@/lib/utils";
+import { removeAdmin } from "@/lib/backend-apis/admin";
+import { cn, formatDate } from "@/lib/utils";
 import type { Admin } from "@/types/models/admin";
 import { EventFor } from "@/types/util-types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -70,142 +53,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { format as formatDate } from "date-fns";
-
-const adminFormSchema = z.object({
-  email: z.string().email("Please enter email"),
-  name: z.string().min(1, "Please enter name"),
-  contact: z.string().length(10, "Please enter contact"),
-  password: z.string().min(2, "Please enter password minimum length of 2"),
-});
-
-function AddAdmin() {
-  const { toast } = useToast();
-  const [toggleForm, setToggleForm] = useState(false);
-  const form = useForm<z.infer<typeof adminFormSchema>>({
-    resolver: zodResolver(adminFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      contact: "",
-      password: "",
-    },
-  });
-
-  function onSubmit(values: z.output<typeof adminFormSchema>) {
-    createAdmin(values).then((res) => {
-      if (!res.status) {
-        toast({ variant: "destructive", title: res.message });
-      } else {
-        setToggleForm(!toggleForm);
-      }
-    });
-  }
-
-  return (
-    <Dialog open={toggleForm} onOpenChange={setToggleForm}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Add Admin</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add Admin</DialogTitle>
-          <DialogDescription>Click save when you are done.</DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            className="grid grid-cols-4 gap-4 py-4"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <FormField
-              disabled={form.formState.isSubmitting}
-              control={form.control}
-              name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem className="col-span-4">
-                    <FormLabel className="text-right">Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="col-span-3"
-                        placeholder="Enter your name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              disabled={form.formState.isSubmitting}
-              control={form.control}
-              name="email"
-              render={({ field }) => {
-                return (
-                  <FormItem className="col-span-4">
-                    <FormLabel className="text-right">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="col-span-3"
-                        placeholder="Enter email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              disabled={form.formState.isSubmitting}
-              control={form.control}
-              name="password"
-              render={({ field }) => {
-                return (
-                  <FormItem className="col-span-4">
-                    <FormLabel className="text-right">Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="col-span-3"
-                        placeholder="Enter Password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              disabled={form.formState.isSubmitting}
-              control={form.control}
-              name="contact"
-              render={({ field }) => {
-                return (
-                  <FormItem className="col-span-4">
-                    <FormLabel className="text-right">Contact</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="col-span-3"
-                        placeholder="Enter Contact"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <Button type="submit">Save</Button>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 const cols = [
   {
@@ -332,6 +179,14 @@ const columns: ColumnDef<Admin>[] = [
     header: "Contact",
   },
   {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const { status } = row.original;
+      return <p className="text-yellow-500">{status}</p>;
+    },
+  },
+  {
     accessorKey: "created_at",
     header: "Date",
     cell: ({ row }) => {
@@ -375,7 +230,6 @@ export default function AdminTable({ data }: { data: Admin[] }) {
           className="max-w-sm"
         />
         <FilterMenu onColNameChange={(col) => setFilterBy(col)} />
-        <AddAdmin />
       </div>
       <div className="rounded-md border mt-1">
         <Table>
