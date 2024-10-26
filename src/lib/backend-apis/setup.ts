@@ -25,7 +25,7 @@ async function createResponse<T>(error: unknown): Promise<ApiResponse<T>> {
         status: false,
         statusCode: 500,
         message: "json parsing failed",
-        error: "client error" as T,
+        data: "" as T
       };
     }
   }
@@ -34,7 +34,7 @@ async function createResponse<T>(error: unknown): Promise<ApiResponse<T>> {
     status: false,
     statusCode: 500,
     message: "something went wrong",
-    error: "client error" as T,
+    data: "" as T
   };
 }
 
