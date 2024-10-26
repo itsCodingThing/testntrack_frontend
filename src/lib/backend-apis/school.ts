@@ -3,7 +3,7 @@ import { ApiResponse } from "@/types/response";
 import { revalidatePath } from "next/cache";
 import { apiV1, handleJsonApi } from "./setup";
 
-export const getSchools = async () => {
+export const getAllSchools = async () => {
   const response = await apiV1.get<ApiResponse<ISchool[]>>("school").json();
   return response;
 };
