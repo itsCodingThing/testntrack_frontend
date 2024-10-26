@@ -4,9 +4,10 @@ import Profile from "../../_components/profile";
 export default async function SettingPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const response = await getAdminById(Number(params.id));
+  const { id } = await params;
+  const response = await getAdminById(Number(id));
 
   if (!response.status) {
     return <div className="container mx-auto">no profile found</div>;

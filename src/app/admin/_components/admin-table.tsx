@@ -1,28 +1,7 @@
 "use client";
 
-import { CheckIcon, ChevronsUpDownIcon, MoreIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -38,10 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
-import { removeAdmin } from "@/lib/backend-apis/admin";
-import { cn, formatDate } from "@/lib/utils";
-import type { Admin } from "@/types/models/admin";
 import { EventFor } from "@/types/util-types";
 import {
   ColumnDef,
@@ -53,117 +28,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-
-const cols = [
-  {
-    value: "name",
-    label: "Name",
-  },
-  {
-    value: "email",
-    label: "Email",
-  },
-  {
-    value: "contact",
-    label: "Contact",
-  },
-];
-
-function FilterMenu({
-  onColNameChange,
-}: {
-  onColNameChange: (col: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [col, setCol] = useState("");
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {col
-            ? cols.find((colName) => colName.value === col)?.label
-            : "filter by..."}
-          <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandList>
-            <CommandEmpty>No col name found.</CommandEmpty>
-            <CommandGroup>
-              {cols.map((colName) => (
-                <CommandItem
-                  key={colName.value}
-                  value={colName.value}
-                  onSelect={(currentValue) => {
-                    setCol(currentValue === col ? "" : currentValue);
-                    setOpen(false);
-                    onColNameChange(currentValue);
-                  }}
-                >
-                  <CheckIcon
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      col === colName.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {colName.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-function AdminTableDropdown({ id }: { id: number }) {
-  const { toast } = useToast();
-
-  return (
-    <div className="w-full">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreIcon className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>View</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => {
-              removeAdmin(id.toString()).then((res) => {
-                if (res.status) {
-                  toast({
-                    variant: "default",
-                    title: "Admin deleted successfully",
-                  });
-                } else {
-                  toast({
-                    variant: "destructive",
-                    title: "Failed to delete admin",
-                  });
-                }
-              });
-            }}
-          >
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-}
+import { cn, formatDate } from "@/lib/utils";
+import type { Admin } from "@/types/models/admin";
+import AdminTableDropdown from "./admin-table-dropdown";
+import FilterMenu from "./admin-table-filter";
 
 const columns: ColumnDef<Admin>[] = [
   {
@@ -183,7 +51,7 @@ const columns: ColumnDef<Admin>[] = [
     header: "Status",
     cell: ({ row }) => {
       const { status } = row.original;
-      return <p className="text-yellow-500">{status}</p>;
+      return <p className={cn({ "text-yellow-500": status === "pending", "text-green-500": status === "active", "text-red-500": status === "deactive", })}>{status}</p>;
     },
   },
   {
@@ -242,9 +110,9 @@ export default function AdminTable({ data }: { data: Admin[] }) {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
